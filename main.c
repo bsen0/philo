@@ -6,7 +6,7 @@
 /*   By: bsen <bsen@student.42kocaeli.com.tr>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/06/19 13:43:31 by bsen              #+#    #+#             */
-/*   Updated: 2024/07/05 13:03:07 by bsen             ###   ########.fr       */
+/*   Updated: 2024/09/02 17:26:38 by bsen             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,9 +15,6 @@
 
 int	init_data(t_data *data, char **av)
 {
-	int	i;
-
-	i = -1;
 	data->nb_philo = ft_atoi(av[1]);
 	data->nb_eat = ft_atoi(av[1]);
 	if (data->nb_philo < 1)
@@ -82,9 +79,7 @@ void	*control(void *arg)
 {
 	t_philo	*philo;
 	int		i;
-	int		j;
 
-	j = 0;
 	i = -1;
 	philo = (t_philo *)arg;
 	while (1)
