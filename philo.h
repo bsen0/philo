@@ -6,7 +6,7 @@
 /*   By: bsen <bsen@student.42kocaeli.com.tr>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/07/03 14:56:19 by bsen              #+#    #+#             */
-/*   Updated: 2024/07/05 13:03:18 by bsen             ###   ########.fr       */
+/*   Updated: 2024/09/09 14:03:50 by bsen             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -63,6 +63,8 @@ int					deadcheck(t_philo *philo);
 void				last_t_control(t_philo *philo);
 void				whodied(t_philo *philo);
 int					m_init(t_data *data);
+int					mutex_free(t_data *data, int x, int y);
 void				one_philo(t_philo *philo);
+void				thread_join(t_philo *philos, int len);
 
 #endif

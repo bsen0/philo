@@ -6,7 +6,7 @@
 /*   By: bsen <bsen@student.42kocaeli.com.tr>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/06/19 13:43:31 by bsen              #+#    #+#             */
-/*   Updated: 2024/09/02 17:26:38 by bsen             ###   ########.fr       */
+/*   Updated: 2024/09/09 14:08:16 by bsen             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -77,26 +77,40 @@ int	check_args(char **av, int ac)
 
 void	*control(void *arg)
 {
-	t_philo	*philo;
+	t_philo	*p;
 	int		i;
 
 	i = -1;
-	philo = (t_philo *)arg;
+	p = (t_philo *)arg;
 	while (1)
 	{
-		while (++i < philo->data->nb_philo)
+		while (++i < p->data->nb_philo)
 		{
-			last_t_control(&philo[i]);
-			if (dead_or_alive(&philo[i]))
+			last_t_control(&p[i]);
+			if (dead_or_alive(&p[i]))
 				return (NULL);
-			pthread_mutex_lock(&philo->data->had_enough_m);
-			if (philo->data->nb_eat == 0)
-				return (pthread_mutex_unlock(&philo->data->had_enough_m), NULL);
-			pthread_mutex_unlock(&philo->data->had_enough_m);
+			pthread_mutex_lock(&p->data->had_enough_m);
+			if (p->data->nb_eat == 0)
+			{
+				pthread_mutex_unlock(&p->data->had_enough_m);
+				pthread_mutex_lock(&p->data->anyone_dead_m);
+				p->data->dead = true;
+				return (pthread_mutex_unlock(&p->data->anyone_dead_m), NULL);
+			}
+			pthread_mutex_unlock(&p->data->had_enough_m);
 		}
 		i = -1;
 	}
 	return (NULL);
+}
+
+void	thread_join(t_philo *philos, int len)
+{
+	int	i;
+
+	i = -1;
+	while (--len >= 0)
+		pthread_join(philos[i].thread, NULL);
 }
 
 int	main(int ac, char **av)
@@ -107,12 +121,16 @@ int	main(int ac, char **av)
 
 	if (check_args(av, ac) || init_data(&data, av))
 		return (write(2, "Error\n", 6), 1);
+	if (data.nb_must_eat <= 0 || data.time_to_die <= 0 || data.time_to_eat <= 0
+		|| data.time_to_sleep <= 0)
+		return (0);
 	philo = malloc(sizeof(t_philo) * data.nb_philo);
 	if (!philo)
-		return (write(2, "Error\n", 6), 1);
+		return (write(2, "Error\n", 6), mutex_free(&data, 6, data.nb_philo), 1);
 	if (init_philo(philo, &data) || pthread_create(&ctrl, NULL, &control,
 			philo))
-		return (write(2, "Error\n", 6), 1);
+		return (write(2, "Error\n", 6), mutex_free(&data, 6, data.nb_philo),
+			free(philo), 1);
 	philos_begining(philo);
 	clean_data(&data, philo);
 	pthread_join(ctrl, NULL);

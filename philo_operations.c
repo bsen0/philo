@@ -6,7 +6,7 @@
 /*   By: bsen <bsen@student.42kocaeli.com.tr>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/06/27 19:01:04 by bsen              #+#    #+#             */
-/*   Updated: 2024/07/05 13:30:28 by bsen             ###   ########.fr       */
+/*   Updated: 2024/09/09 14:03:23 by bsen             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -19,13 +19,17 @@ void	philos_begining(t_philo *philo)
 
 	if (philo->data->nb_philo == 1)
 	{
-		pthread_create(&philo->thread, NULL, (void *)one_philo, philo);
+		if (pthread_create(&philo->thread, NULL, (void *)one_philo, philo))
+			return ;
 		pthread_join(philo->thread, NULL);
 		return ;
 	}
 	i = -1;
 	while (++i < philo->data->nb_philo)
-		pthread_create(&philo[i].thread, NULL, philo_life, &philo[i]);
+	{
+		if(pthread_create(&philo[i].thread, NULL, philo_life, &philo[i]))
+			return (thread_join(philo, i));
+	}
 	i = -1;
 	while (++i < philo->data->nb_philo)
 		pthread_join(philo[i].thread, NULL);
@@ -75,11 +79,10 @@ void	fork_and_eat(t_philo *philo)
 	pthread_mutex_lock(&philo->data->forks[(philo->id)
 		% philo->data->nb_philo]);
 	if (deadcheck(philo) == 1)
-	{
-		drop_forks(philo);
-		return ;
-	}
+		return (drop_forks(philo), (void)0);
 	print_status(philo, "has taken a fork");
+	if (deadcheck(philo) == 1)
+		return (drop_forks(philo), (void)0);
 	print_status(philo, "is eating");
 	sensitive_usleep(philo->data->time_to_eat);
 	pthread_mutex_lock(&philo->data->time_t);

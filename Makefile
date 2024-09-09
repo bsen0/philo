@@ -4,7 +4,7 @@ SRC = philo_operations.c main.c philo_operations2.c\
 NAME = philo
 OBJ = $(SRC:.c=.o)
 CC = gcc
-CFLAGS = -Wall -Wextra -Werror -g #-fsanitize=thread -pthread
+CFLAGS = -Wall -Wextra -Werror -g -fsanitize=thread -pthread
 RM = rm -f
 
 all: $(NAME)

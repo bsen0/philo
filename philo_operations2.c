@@ -6,7 +6,7 @@
 /*   By: bsen <bsen@student.42kocaeli.com.tr>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/06/29 15:21:37 by bsen              #+#    #+#             */
-/*   Updated: 2024/07/05 12:57:48 by bsen             ###   ########.fr       */
+/*   Updated: 2024/09/05 13:21:53 by bsen             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -63,14 +63,14 @@ int	m_init(t_data *data)
 	i = -1;
 	while (++i < data->nb_philo)
 		if (pthread_mutex_init(&data->forks[i], NULL))
-			return (1);
+			return (mutex_free(data, 1, i));
 	if (pthread_mutex_init(&data->anyone_dead_m, NULL))
-		return (1);
+		return (mutex_free(data, 2, i));
 	if (pthread_mutex_init(&data->print_m, NULL))
-		return (1);
+		return (mutex_free(data, 3, i));
 	if (pthread_mutex_init(&data->time_t, NULL))
-		return (1);
+		return (mutex_free(data, 4, i));
 	if (pthread_mutex_init(&data->had_enough_m, NULL))
-		return (1);
+		return (mutex_free(data, 5, i));
 	return (0);
 }
